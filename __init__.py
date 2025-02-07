@@ -8,6 +8,8 @@ with open(".token", "r", encoding="utf-8") as f:
     TOKEN = f.read()
 
 intents = discord.Intents.default()
+intents.message_content = True
+
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 
@@ -20,14 +22,12 @@ async def on_ready():
         print(f"Error syncing commands: {e}")
 
 
-@bot.tree.command(name="sound", description="Play a sound")
-@app_commands.describe(
-    name="name",
-    message="Name of the sound on the PlSound server."
-)
+#@bot.tree.command(name="sound", description="Play a sound")
+#@app_commands.describe(
+#    name="name"
+#)
+@bot.command()
 async def sound(ctx, name: str):
-    await ctx.defer()
-
     try:
         response = requests.get(f"https://plsound.wediaklup.de/get/{name}")
         response.raise_for_status()
@@ -35,10 +35,10 @@ async def sound(ctx, name: str):
         filename = response.headers.get("X-Filename")
         data = io.BytesIO(response.content)
 
-        await ctx.respond(file=discord.File(data, filename=filename))
+        await ctx.send(file=discord.File(data, filename=filename))
 
     except requests.exceptions.HTTPError as e:
-        await ctx.respond(f"Failed to fetch file: {e}", ephemeral=True)
+        await ctx.send(f"Failed to fetch file: {e}", ephemeral=True)
 
 bot.run(TOKEN)
 
