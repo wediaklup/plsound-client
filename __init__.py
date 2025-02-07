@@ -40,3 +40,5 @@ async def sound(ctx, name: str):
     except requests.exceptions.HTTPError as e:
         await ctx.respond(f"Failed to fetch file: {e}", ephemeral=True)
 
+bot.run(TOKEN)
+
